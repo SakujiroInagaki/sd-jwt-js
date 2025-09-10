@@ -220,20 +220,20 @@ export class SDJwtInstance<ExtendedPayload extends SdJwtPayload> {
       }
     }
 
-    if (!options?.keyBindingNonce) {
+    if (!sdjwt.kbJwt) {
+      if (options?.keyBindingNonce) {
+        throw new SDJWTException('Key Binding JWT not exist');
+      }
       return { payload, header };
     }
 
-    if (!sdjwt.kbJwt) {
-      throw new SDJWTException('Key Binding JWT not exist');
-    }
     if (!this.userConfig.kbVerifier) {
       throw new SDJWTException('Key Binding Verifier not found');
     }
     const kb = await sdjwt.kbJwt.verifyKB({
       verifier: this.userConfig.kbVerifier,
       payload: payload as JwtPayload,
-      nonce: options.keyBindingNonce,
+      nonce: options?.keyBindingNonce,
     });
     if (!kb) {
       throw new Error('signature is not valid');
@@ -547,20 +547,21 @@ export class SDJwtGeneralJSONInstance<ExtendedPayload extends SdJwtPayload> {
       }
     }
 
-    if (!options?.keyBindingNonce) {
+    if (!sdjwt.kbJwt) {
+      if (options?.keyBindingNonce) {
+        throw new SDJWTException('Key Binding JWT not exist');
+      }
       return { payload, headers };
     }
 
-    if (!sdjwt.kbJwt) {
-      throw new SDJWTException('Key Binding JWT not exist');
-    }
+    // Verify Key Binding JWT regardless of nonce presence
     if (!this.userConfig.kbVerifier) {
       throw new SDJWTException('Key Binding Verifier not found');
     }
     const kb = await sdjwt.kbJwt.verifyKB({
       verifier: this.userConfig.kbVerifier,
       payload: payload as JwtPayload,
-      nonce: options.keyBindingNonce as string,
+      nonce: options?.keyBindingNonce,
     });
     if (!kb) {
       throw new Error('signature is not valid');

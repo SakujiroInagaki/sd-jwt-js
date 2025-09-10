@@ -17,7 +17,7 @@ export class KBJwt<
   public async verifyKB(values: {
     verifier: KbVerifier;
     payload: JwtPayload;
-    nonce: string;
+    nonce?: string;
   }) {
     if (!this.header || !this.payload || !this.signature) {
       throw new SDJWTException('Verify Error: Invalid JWT');
@@ -49,7 +49,7 @@ export class KBJwt<
     if (!verified) {
       throw new SDJWTException('Verify Error: Invalid JWT Signature');
     }
-    if (this.payload.nonce !== values.nonce) {
+    if (values.nonce && this.payload.nonce !== values.nonce) {
       throw new SDJWTException('Verify Error: Invalid Nonce');
     }
 
